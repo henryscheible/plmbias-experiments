@@ -16,6 +16,6 @@
     "datasets": [
         "winobias",
         "stereoset",
-        "crows-pairs"
+        "crows_pairs"
     ]
 }

@@ -7,7 +7,8 @@ import requests
 
 contexts = {
     # "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
-    "default": "unix:///var/run/docker.sock",
+    # "default": "unix:///var/run/docker.sock",
+    "mms-large-1": "ssh://henry@mms-large-1.cs.dartmouth.edu"
     # "mms-large-2": "ssh://henry@mms-large-2.cs.dartmouth.edu",
 }
 
@@ -31,25 +32,25 @@ training_types = [
 ]
 
 gpu_cards = [
-    ("default", 0),
+    ("mms-large-1", 0),
     # ("mms-large-2", 0),
     # ("dsail2", 0),
-    ("default", 1),
+    ("mms-large-1", 1),
     # ("mms-large-2", 1),
     # ("dsail2", 1),
-    ("default", 2),
+    ("mms-large-1", 2),
     # ("mms-large-2", 2),
     # ("dsail2", 2),
-    ("default", 3),
+    ("mms-large-1", 3),
     # ("mms-large-2", 3),
     # ("dsail2", 3),
     # ("mms-large-1", 4),
     # ("mms-large-2", 4),
-    ("default", 5),
+    ("mms-large-1", 5),
     # ("mms-large-2", 5),
-    ("default", 6),
+    ("mms-large-1", 6),
     # ("mms-large-2", 6),
-    ("default", 7),
+    ("mms-large-1", 7),
     # ("mms-large-2", 7),
 ]
 
@@ -64,7 +65,7 @@ for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(con
     rand_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     config["experiments"].append({
       "name": f"{idx}_{model.replace('/', '-')}_{dataset}_{training_type}",
-      "image": "ghcr.io/henryscheible/train:b68d731babaed3989e429875e152e66f38785bb5",
+      "image": "ghcr.io/henryscheible/train:e7dc41f3c035a9669eae132a91f33708414f6f61",
       "context": context,
       "card": card,
       "buildargs": {
