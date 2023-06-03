@@ -1,0 +1,18 @@
+{
+  "contexts": {
+    "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
+    "mms-large-1": "ssh://henry@mms-large-1.cs.dartmouth.edu"
+  },
+  "experiments": [
+    {
+      "name": "t5_ablation_test",
+      "image": "ablation",
+      "context": "mms-large-1",
+      "card": 6,
+      "buildargs": {
+        "CONTRIBS": "plmbias/t5-small_stereoset_finetuned_contribs:latest",
+        "DATASET": "stereoset"
+      }
+    }
+  ]
+}

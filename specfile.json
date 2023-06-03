@@ -1,0 +1,16 @@
+{
+    "models": [
+        "t5-small",
+        "t5-base",
+        "t5-large"
+    ],
+    "train_types": [
+        "classifieronly",
+        "finetuned"
+    ],
+    "datasets": [
+        "winobias",
+        "stereoset",
+        "crows-pairs"
+    ]
+}
