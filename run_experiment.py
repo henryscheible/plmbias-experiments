@@ -21,7 +21,6 @@ def launch_experiments(experiments, context_urls):
         env_str = " ".join([f"-e {key}={value}" for key, value in buildargs.items()])
         os.system(f"docker context use {experiment['context']} && docker run {env_str} -e WANDB_DOCKER={experiment['image']} -d --gpus all --name {experiment['name']} {experiment['image']}")
         print(f"Started Experiment: {experiment['name']}")
-        time.sleep(2)
 
 
 
