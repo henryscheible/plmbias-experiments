@@ -1,6 +1,8 @@
+from collections import defaultdict
 import json
 import os
 import sys
+import time
 
 import docker
 
@@ -11,16 +13,16 @@ def get_docker_contexts(contexts):
 
 def launch_experiments(experiments, context_urls):
     wandb_token = os.environ.get("WANDB_TOKEN")
-    contexts = get_docker_contexts(context_urls)
     for experiment in experiments:
         buildargs = {k: str(v) for k, v in experiment["buildargs"].items()}
         buildargs["CUDA_VISIBLE_DEVICES"] = str(experiment["card"])
-        buildargs["WANDB_TOKEN"] = wandb_token
-        print(buildargs["WANDB_TOKEN"])
+        buildargs["WANDB_API_KEY"] = wandb_token
         print("Launching container...")
         env_str = " ".join([f"-e {key}={value}" for key, value in buildargs.items()])
         os.system(f"docker context use {experiment['context']} && docker run {env_str} -e WANDB_DOCKER={experiment['image']} -itd --gpus all --name {experiment['name']} {experiment['image']}")
         print(f"Started Experiment: {experiment['name']}")
+        time.sleep(1)
+
 
 
 def monitor_experiments(experiments, context_urls):
@@ -36,13 +38,14 @@ def monitor_experiments(experiments, context_urls):
 
 
 def stop_experiments(experiments, context_urls):
-    contexts = get_docker_contexts(context_urls)
+    context_to_expers = defaultdict(list)
+
     for experiment in experiments:
-        client = contexts[experiment["context"]]
-        try:
-            os.system(f"docker context use {experiment['context']} && docker rm --force {experiment['name']}")
-        except docker.errors.NotFound:
-            print(f"Container \"{experiment['name']}\" does not exist")
+        context_to_expers[experiment["context"]] += [experiment['name']]
+    
+    for context in context_to_expers.keys():
+        os.system(f"docker context use {context} && docker rm --force {' '.join([name for name in context_to_expers[context]])}")
+
 
 
 if __name__ == "__main__":
