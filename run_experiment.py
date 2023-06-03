@@ -19,9 +19,9 @@ def launch_experiments(experiments, context_urls):
         buildargs["WANDB_API_KEY"] = wandb_token
         print("Launching container...")
         env_str = " ".join([f"-e {key}={value}" for key, value in buildargs.items()])
-        os.system(f"docker context use {experiment['context']} && docker run {env_str} -e WANDB_DOCKER={experiment['image']} -itd --gpus all --name {experiment['name']} {experiment['image']}")
+        os.system(f"docker context use {experiment['context']} && docker run {env_str} -e WANDB_DOCKER={experiment['image']} -d --gpus all --name {experiment['name']} {experiment['image']}")
         print(f"Started Experiment: {experiment['name']}")
-        time.sleep(1)
+        time.sleep(2)
 
 
 
