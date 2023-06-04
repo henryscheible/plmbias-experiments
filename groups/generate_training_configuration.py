@@ -73,7 +73,7 @@ for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(con
         "DATASET": dataset,
         "TRAIN_TYPE": training_type,
         "MODEL_TYPE": "generative",
-        "LEARNING_RATE": 5e-7
+        "LEARNING_RATE": 0
       }
     })
 
