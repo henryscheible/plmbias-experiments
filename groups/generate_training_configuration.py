@@ -13,9 +13,9 @@ contexts = {
 }
 
 models = [
-    "t5-small",
+    # "t5-small",
     # "t5-base",
-    # "t5-large",
+    "t5-large",
     # "google/flan-t5-base",
     # "google/flan-t5-large"
 ]
@@ -65,7 +65,7 @@ for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(con
     rand_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     config["experiments"].append({
       "name": f"{idx}_{model.replace('/', '-')}_{dataset}_{training_type}",
-      "image": "ghcr.io/henryscheible/train:e7dc41f3c035a9669eae132a91f33708414f6f61",
+      "image": "ghcr.io/henryscheible/train:7d815b8e14bc03192eefa0c529742b1b21ad77fe",
       "context": context,
       "card": card,
       "buildargs": {

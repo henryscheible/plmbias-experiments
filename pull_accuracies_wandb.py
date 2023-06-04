@@ -22,6 +22,7 @@ for spec in specs:
     except wandb.errors.CommError:
         results.loc[len(results)] = {"name": spec}
         continue
+    print(spec)
     accuracies = []
     for version in model_versions:
         acc = version.logged_by().summary["eval/accuracy"]["max"]
