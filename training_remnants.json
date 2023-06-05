@@ -1,0 +1,172 @@
+{
+    "contexts": {
+        "mms-large-1": "unix:///var/run/docker.sock"
+    },
+    "experiments": [
+        {
+            "name": "0_t5-small_winobias_classifieronly",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 0,
+            "buildargs": {
+                "MODEL": "t5-small",
+                "DATASET": "winobias",
+                "TRAIN_TYPE": "classifieronly",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "1_t5-small_crows_pairs_classifieronly",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 1,
+            "buildargs": {
+                "MODEL": "t5-small",
+                "DATASET": "crows_pairs",
+                "TRAIN_TYPE": "classifieronly",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "2_t5-large_stereoset_classifieronly",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 2,
+            "buildargs": {
+                "MODEL": "t5-large",
+                "DATASET": "stereoset",
+                "TRAIN_TYPE": "classifieronly",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "3_t5-large_stereoset_finetuned",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 3,
+            "buildargs": {
+                "MODEL": "t5-large",
+                "DATASET": "stereoset",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "4_google-flan-t5-small_stereoset_classifieronly",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 5,
+            "buildargs": {
+                "MODEL": "google/flan-t5-small",
+                "DATASET": "stereoset",
+                "TRAIN_TYPE": "classifieronly",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "5_google-flan-t5-small_winobias_classifieronly",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 6,
+            "buildargs": {
+                "MODEL": "google/flan-t5-small",
+                "DATASET": "winobias",
+                "TRAIN_TYPE": "classifieronly",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "6_google-flan-t5-small_winobias_finetuned",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 7,
+            "buildargs": {
+                "MODEL": "google/flan-t5-small",
+                "DATASET": "winobias",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "7_google-flan-t5-base_winobias_finetuned",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 0,
+            "buildargs": {
+                "MODEL": "google/flan-t5-base",
+                "DATASET": "winobias",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "9_google-flan-t5-large_stereoset_finetuned",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 2,
+            "buildargs": {
+                "MODEL": "google/flan-t5-large",
+                "DATASET": "stereoset",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "10_google-flan-t5-large_winobias_finetuned",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 3,
+            "buildargs": {
+                "MODEL": "google/flan-t5-large",
+                "DATASET": "winobias",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        },
+        {
+            "name": "11_google-flan-t5-large_crows_pairs_finetuned",
+            "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
+            "context": "mms-large-1",
+            "card": 5,
+            "buildargs": {
+                "MODEL": "google/flan-t5-large",
+                "DATASET": "crows_pairs",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 12345
+            }
+        }
+    ]
+}

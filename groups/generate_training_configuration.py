@@ -2,6 +2,7 @@ from itertools import cycle, product
 import json
 import random
 import string
+import pandas as pd
 
 import requests
 
@@ -13,11 +14,11 @@ contexts = {
 }
 
 models = [
-    # "t5-small",
-    # "t5-base",
-    # "t5-large",
-    # "google/flan-t5-small",
-    # "google/flan-t5-base",
+    "t5-small",
+    "t5-base",
+    "t5-large",
+    "google/flan-t5-small",
+    "google/flan-t5-base",
     "google/flan-t5-large"
 ]
 
@@ -62,11 +63,21 @@ config["experiments"] = []
 
 configs = product(models, datasets, training_types)
 
-for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(configs, cycle(gpu_cards))):
+results = pd.read_csv("./results.csv")
+
+def config_filter(config):
+    model, dataset, training_type = config
+    name = f"{model.replace('/', '-')}_{dataset}_{training_type}"
+    acc = results.loc[results["name"] == name]["accuracy"].iloc[0]
+    return not (acc >= 0.7)
+
+good_configs = filter(config_filter, configs)
+
+for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(good_configs, cycle(gpu_cards))):
     rand_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     config["experiments"].append({
       "name": f"{idx}_{model.replace('/', '-')}_{dataset}_{training_type}",
-      "image": "ghcr.io/henryscheible/train:31db9944316d004fe9c50c664e5623dcd703e18c",
+      "image": "ghcr.io/henryscheible/train:1e4a37cc5e6f05054b6725a5a08ec046df6e8bfa",
       "context": context,
       "card": card,
       "buildargs": {
@@ -75,9 +86,10 @@ for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(con
         "TRAIN_TYPE": training_type,
         "MODEL_TYPE": "generative",
         "LEARNING_RATE": 5e-4,
-        "EPOCHS": 30
+        "EPOCHS": 50,
+        "SEED": 12345
       }
     })
 
-with open("training_generative.json", "w") as f:
+with open("training_remnants.json", "w") as f:
     f.write(json.dumps(config))
