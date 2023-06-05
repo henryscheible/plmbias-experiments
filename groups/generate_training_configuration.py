@@ -17,8 +17,8 @@ models = [
     "t5-base",
     "t5-large",
     "google/flan-t5-small"
-    # "google/flan-t5-base",
-    # "google/flan-t5-large"
+    "google/flan-t5-base",
+    "google/flan-t5-large"
 ]
 
 datasets = [
@@ -74,7 +74,8 @@ for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(con
         "DATASET": dataset,
         "TRAIN_TYPE": training_type,
         "MODEL_TYPE": "generative",
-        "LEARNING_RATE": 1e-4
+        "LEARNING_RATE": 5e-4,
+        "EPOCHS": 30
       }
     })
 
