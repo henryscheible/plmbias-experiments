@@ -7,9 +7,20 @@ import wandb
 from itertools import product
 import numpy as np
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 api = wandb.Api()
 
-results = pd.DataFrame(columns=["name", "accuracy", "versions", "has_contribs"])
+results = pd.DataFrame(columns=["name", "accuracy", "versions", "acc>0.7", "acc>0.75", "has_contribs"])
 
 with open("specfile.json", "r") as specfile:
     raw_specs = json.loads(specfile.read())
@@ -35,13 +46,23 @@ for spec in specs:
     best_model.aliases.append('best')
     for version in model_versions:
         version.save()
+    
     results.loc[len(results)] = {
         "name": spec,
         "accuracy": max_acc,
+        "acc>0.7": max_acc > 0.7,
+        "acc>0.75": max_acc > 0.75,
         "versions": len(model_versions)
     }
 results["versions"] = results["versions"].astype("Int64")
+results["acc>0.7"] = results["acc>0.7"].astype("Int64").fillna(0)
+results["acc>0.75"] = results["acc>0.75"].astype("Int64").fillna(0)
+
+results.to_csv("results.csv")
 print(results)
+print(f"ACC > .7: {results['acc>0.7'].sum()} models")
+print(f"ACC > .75: {results['acc>0.75'].sum()} models")
+
 
 # for launch_file in sys.argv[1:]:
 #     with open(launch_file, "r") as file:

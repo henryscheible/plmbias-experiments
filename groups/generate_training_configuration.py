@@ -13,11 +13,11 @@ contexts = {
 }
 
 models = [
-    "t5-small",
-    "t5-base",
-    "t5-large",
-    "google/flan-t5-small",
-    "google/flan-t5-base",
+    # "t5-small",
+    # "t5-base",
+    # "t5-large",
+    # "google/flan-t5-small",
+    # "google/flan-t5-base",
     "google/flan-t5-large"
 ]
 
