@@ -65,7 +65,7 @@ for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(con
     rand_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     config["experiments"].append({
       "name": f"{idx}_{model.replace('/', '-')}_{dataset}_{training_type}",
-      "image": "ghcr.io/henryscheible/train:c94c659663a1076cda22059283a0656872c9ae7a",
+      "image": "ghcr.io/henryscheible/train:b2520d77e2d6f0600a8eb9661dd6ecbf376c6f24",
       "context": context,
       "card": card,
       "buildargs": {
