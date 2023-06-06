@@ -87,7 +87,7 @@ for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(goo
         "MODEL_TYPE": "generative",
         "LEARNING_RATE": 5e-4,
         "EPOCHS": 50,
-        "SEED": 12345
+        "SEED": 54321
       }
     })
 
