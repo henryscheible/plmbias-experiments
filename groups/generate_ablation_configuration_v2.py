@@ -7,7 +7,7 @@ import pandas as pd
 import requests
 
 contexts = {
-    "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
+    # "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
     # "default": "unix:///var/run/docker.sock",
     "mms-large-1": "unix:///var/run/docker.sock"
     # "mms-large-2": "ssh://henry@mms-large-2.cs.dartmouth.edu",
