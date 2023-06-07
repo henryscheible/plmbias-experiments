@@ -7,7 +7,7 @@ import pandas as pd
 import requests
 
 contexts = {
-    # "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
+    "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
     # "default": "unix:///var/run/docker.sock",
     "mms-large-1": "unix:///var/run/docker.sock"
     # "mms-large-2": "ssh://henry@mms-large-2.cs.dartmouth.edu",
@@ -46,7 +46,7 @@ gpu_cards = [
     ("mms-large-1", 3),
     # ("mms-large-2", 3),
     # ("dsail2", 3),
-    # ("mms-large-1", 4),
+    ("mms-large-1", 4),
     # ("mms-large-2", 4),
     ("mms-large-1", 5),
     # ("mms-large-2", 5),
@@ -71,13 +71,13 @@ def config_filter(config):
     acc = results.loc[results["name"] == name]["accuracy"].iloc[0]
     return (acc >= 0.75)
 
-good_configs = list(filter(config_filter, configs))[:7]
+good_configs = list(filter(config_filter, configs))[6:26]
 
 for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(good_configs, cycle(gpu_cards))):
     rand_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     config["experiments"].append({
       "name": f"{idx}_{model.replace('/', '-')}_{dataset}_{training_type}",
-      "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679",
+      "image": "ghcr.io/henryscheible/shapley:e3f283b71924d60ce245aaae43fb24e938107a31",
       "context": context,
       "card": card,
       "buildargs": {
