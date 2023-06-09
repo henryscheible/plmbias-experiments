@@ -1,1 +1,67 @@
-{"contexts": {"mms-large-1": "unix:///var/run/docker.sock"}, "experiments": [{"name": "0_t5-small_winobias_classifieronly", "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679", "context": "mms-large-1", "card": 0, "buildargs": {"CHECKPOINT": "t5-small_winobias_classifieronly", "DATASET": "winobias", "MODEL_TYPE": "generative", "SAMPLES": 250, "SOURCE": "wandb"}}, {"name": "1_t5-small_winobias_finetuned", "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679", "context": "mms-large-1", "card": 1, "buildargs": {"CHECKPOINT": "t5-small_winobias_finetuned", "DATASET": "winobias", "MODEL_TYPE": "generative", "SAMPLES": 250, "SOURCE": "wandb"}}, {"name": "2_t5-small_crows_pairs_finetuned", "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679", "context": "mms-large-1", "card": 2, "buildargs": {"CHECKPOINT": "t5-small_crows_pairs_finetuned", "DATASET": "crows_pairs", "MODEL_TYPE": "generative", "SAMPLES": 250, "SOURCE": "wandb"}}, {"name": "3_t5-base_winobias_classifieronly", "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679", "context": "mms-large-1", "card": 3, "buildargs": {"CHECKPOINT": "t5-base_winobias_classifieronly", "DATASET": "winobias", "MODEL_TYPE": "generative", "SAMPLES": 250, "SOURCE": "wandb"}}, {"name": "4_t5-base_winobias_finetuned", "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679", "context": "mms-large-1", "card": 5, "buildargs": {"CHECKPOINT": "t5-base_winobias_finetuned", "DATASET": "winobias", "MODEL_TYPE": "generative", "SAMPLES": 250, "SOURCE": "wandb"}}, {"name": "5_t5-large_stereoset_classifieronly", "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679", "context": "mms-large-1", "card": 6, "buildargs": {"CHECKPOINT": "t5-large_stereoset_classifieronly", "DATASET": "stereoset", "MODEL_TYPE": "generative", "SAMPLES": 250, "SOURCE": "wandb"}}, {"name": "6_t5-large_stereoset_finetuned", "image": "ghcr.io/henryscheible/shapley:686b6e82ae9f8fd3940e1b316b3b574f711bb679", "context": "mms-large-1", "card": 7, "buildargs": {"CHECKPOINT": "t5-large_stereoset_finetuned", "DATASET": "stereoset", "MODEL_TYPE": "generative", "SAMPLES": 250, "SOURCE": "wandb"}}]}
+{
+    "contexts": {
+        "mms-large-1": "unix:///var/run/docker.sock"
+    },
+    "experiments": [
+        {
+            "name": "0_t5-small_crows_pairs_classifieronly",
+            "image": "ghcr.io/henryscheible/train:7de4ffb59211026fa52b1fe9fb051ed90ede8010",
+            "context": "dsail2",
+            "card": 0,
+            "buildargs": {
+                "MODEL": "t5-small",
+                "DATASET": "crows_pairs",
+                "TRAIN_TYPE": "classifieronly",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 27
+            }
+        },
+        {
+            "name": "1_google-flan-t5-small_stereoset_classifieronly",
+            "image": "ghcr.io/henryscheible/train:7de4ffb59211026fa52b1fe9fb051ed90ede8010",
+            "context": "dsail2",
+            "card": 1,
+            "buildargs": {
+                "MODEL": "google/flan-t5-small",
+                "DATASET": "stereoset",
+                "TRAIN_TYPE": "classifieronly",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 27
+            }
+        },
+        {
+            "name": "2_google-flan-t5-large_winobias_finetuned",
+            "image": "ghcr.io/henryscheible/train:7de4ffb59211026fa52b1fe9fb051ed90ede8010",
+            "context": "dsail2",
+            "card": 2,
+            "buildargs": {
+                "MODEL": "google/flan-t5-large",
+                "DATASET": "winobias",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 27
+            }
+        },
+        {
+            "name": "3_google-flan-t5-large_crows_pairs_finetuned",
+            "image": "ghcr.io/henryscheible/train:7de4ffb59211026fa52b1fe9fb051ed90ede8010",
+            "context": "dsail2",
+            "card": 3,
+            "buildargs": {
+                "MODEL": "google/flan-t5-large",
+                "DATASET": "crows_pairs",
+                "TRAIN_TYPE": "finetuned",
+                "MODEL_TYPE": "generative",
+                "LEARNING_RATE": 0.0005,
+                "EPOCHS": 50,
+                "SEED": 27
+            }
+        }
+    ]
+}

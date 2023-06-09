@@ -1,18 +1,25 @@
 from itertools import cycle, product
 import json
-
+import random
+import string
+import pandas as pd
+import numpy as np
 import requests
 
 contexts = {
-    "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
-    "mms-large-1": "ssh://henry@mms-large-1.cs.dartmouth.edu",
-    "mms-large-2": "ssh://henry@mms-large-2.cs.dartmouth.edu",
+    # "dsail2": "ssh://henry@dsail2.cs.dartmouth.edu",
+    # "default": "unix:///var/run/docker.sock",
+    "mms-large-1": "unix:///var/run/docker.sock"
+    # "mms-large-2": "ssh://henry@mms-large-2.cs.dartmouth.edu",
 }
 
 models = [
-    "bert-large-uncased",
-    "gpt2",
-    "xlnet-base-cased"
+    "t5-small",
+    "t5-base",
+    "t5-large",
+    "google/flan-t5-small",
+    "google/flan-t5-base",
+    "google/flan-t5-large"
 ]
 
 datasets = [
@@ -27,71 +34,61 @@ training_types = [
 ]
 
 gpu_cards = [
-    ("mms-large-1", 0),
-    ("mms-large-2", 0),
-    ("dsail2", 0),
+    # ("mms-large-1", 0),
+    # ("mms-large-2", 0),
+    # ("dsail2", 0),
     ("mms-large-1", 1),
-    ("mms-large-2", 1),
-    ("dsail2", 1),
+    # ("mms-large-2", 1),
+    # ("dsail2", 1),
     ("mms-large-1", 2),
-    ("mms-large-2", 2),
-    ("dsail2", 2),
+    # ("mms-large-2", 2),
+    # ("dsail2", 2),
     ("mms-large-1", 3),
-    ("mms-large-2", 3),
-    ("dsail2", 3),
-    ("mms-large-1", 4),
-    ("mms-large-2", 4),
-    ("mms-large-1", 5),
-    ("mms-large-2", 5),
-    ("mms-large-1", 6),
-    ("mms-large-2", 6),
+    # ("mms-large-2", 3),
+    # ("dsail2", 3),
+    # ("mms-large-1", 4),
+    # ("mms-large-2", 4),
+    # ("mms-large-1", 5),
+    # ("mms-large-2", 5),
+    # ("mms-large-1", 6),
+    # ("mms-large-2", 6),
     ("mms-large-1", 7),
-    ("mms-large-2", 7),
+    # ("mms-large-2", 7),
 ]
+
 
 config = dict()
 config["contexts"] = contexts
 config["experiments"] = []
 
-
-def has_already_trained(checkpoint):
-    model, dataset, training_type = checkpoint
-    try:
-        validation = requests.get(f"https://huggingface.co/henryscheible/{model}_{dataset}_{training_type}/raw/main/README.md").text
-        val_lines = validation.split("\n")
-        acc_line = list(filter(lambda l: "Accuracy:" in l, val_lines))[0]
-        acc = acc_line[12:]
-        return float(acc) > 0.7
-    except:
-        return False
-
-def has_already_probed(checkpoint):
-    model, dataset, training_type = checkpoint
-    try:
-        validation = requests.get(
-            f"https://huggingface.co/henryscheible/{model}_{dataset}_{training_type}/raw/main/contribs.txt").text
-        return False
-    except:
-        return True
-
-def needs_probing(checkpoint):
-    return has_already_trained(checkpoint) and not has_already_probed(checkpoint)
-
-
 configs = product(models, datasets, training_types)
-required_configs = filter(needs_probing, configs)
 
-for (model, dataset, training_type), (context, card) in zip(required_configs, cycle(gpu_cards)):
+results = pd.read_csv("./results.csv")
+
+def config_filter(config):
+    model, dataset, training_type = config
+    name = f"{model.replace('/', '-')}_{dataset}_{training_type}"
+    acc = results.loc[results["name"] == name]["accuracy"].iloc[0]
+    already_taken = pd.notnull(results.loc[results["name"] == name]["contribs_run_id"].iloc[0])
+    return (acc >= 0.75) and not already_taken
+
+good_configs = list(filter(config_filter, configs))[:4]
+
+for idx, ((model, dataset, training_type), (context, card)) in enumerate(zip(good_configs, cycle(gpu_cards))):
+    rand_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     config["experiments"].append({
-      "name": f"{model}_{dataset}_{training_type}_shapley",
-      "image": "shapley",
+      "name": f"{idx}_{model.replace('/', '-')}_{dataset}_{training_type}",
+      "image": "ghcr.io/henryscheible/shapley:e3f283b71924d60ce245aaae43fb24e938107a31",
       "context": context,
       "card": card,
       "buildargs": {
-        "CHECKPOINT": f"henryscheible/{model}_{dataset}_{training_type}",
-        "DATASET": dataset
+        "CHECKPOINT": f"{model.replace('/', '-')}_{dataset}_{training_type}",
+        "DATASET": dataset,
+        "MODEL_TYPE": "generative",
+        "SAMPLES": 250,
+        "SOURCE": "wandb"
       }
     })
 
-with open("shapley2.json", "w") as f:
+with open("probing.json", "w") as f:
     f.write(json.dumps(config))

@@ -20,20 +20,19 @@ class bcolors:
 
 api = wandb.Api()
 
-results = pd.DataFrame(columns=["name", "accuracy", "versions", "acc>0.7", "acc>0.75", "has_contribs"])
+results = pd.DataFrame(columns=["name", "accuracy", "versions", "acc>0.7", "acc>0.75", "has_contribs", "contribs_artifact", "contribs_run_id"])
 
 with open("specfile.json", "r") as specfile:
     raw_specs = json.loads(specfile.read())
 
 specs = [f"{model.replace('/', '-')}_{dataset}_{train_type}" for model, train_type, dataset in product(raw_specs["models"], raw_specs["train_types"], raw_specs["datasets"])]
 
-for spec in specs:
+for spec in tqdm(specs):
     try:
         model_versions = list(api.artifact_versions("model", f"plmbias/model-{spec}"))
     except wandb.errors.CommError:
         results.loc[len(results)] = {"name": spec}
         continue
-    print(spec)
     accuracies = []
     for version in model_versions:
         acc = version.logged_by().summary["eval/accuracy"]["max"]
@@ -44,16 +43,35 @@ for spec in specs:
     best_model_idx = np.argmax(accuracies)
     best_model = model_versions[best_model_idx]
     best_model.aliases.append('best')
+    contrib_runs = list(filter(lambda run: "contribs" in run.name, best_model.used_by()))
+    assert len(contrib_runs) <= 1
+    if len(contrib_runs) > 0:
+        contrib_run_id = contrib_runs[0].id
+    else:
+        contrib_run_id = None
+
+    contrib_artifacts = [artifact for run in contrib_runs for artifact in list(filter(lambda artifact: artifact.type == "contribs", run.logged_artifacts()))]
+    assert len(contrib_artifacts) <= 1
+    has_contribs = False
+    contribs_artifact = None
+    if len(contrib_artifacts) > 0:
+        has_contribs = True
+        contribs_artifact = contrib_artifacts[0].name
     for version in model_versions:
         version.save()
+
     
     results.loc[len(results)] = {
         "name": spec,
         "accuracy": max_acc,
         "acc>0.7": max_acc > 0.7,
         "acc>0.75": max_acc > 0.75,
-        "versions": len(model_versions)
+        "versions": len(model_versions),
+        "has_contribs": has_contribs,
+        "contribs_artifact": contribs_artifact,
+        "contribs_run_id": contrib_run_id
     }
+
 results["versions"] = results["versions"].astype("Int64")
 results["acc>0.7"] = results["acc>0.7"].astype("Int64").fillna(0)
 results["acc>0.75"] = results["acc>0.75"].astype("Int64").fillna(0)
