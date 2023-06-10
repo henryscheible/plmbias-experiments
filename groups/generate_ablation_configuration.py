@@ -57,7 +57,7 @@ for idx, ((contribs, dataset, portion), (context, card)) in enumerate(zip(config
     rand_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     config["experiments"].append({
       "name": f"{idx}_{contribs.replace('/', '-').replace(':', '-')}_{dataset}_{portion}_ablation",
-      "image": "ghcr.io/henryscheible/ablation:980be76b9ed83ee78621c01ee505c6b65080d89e",
+      "image": "ghcr.io/henryscheible/ablation:085827432af0e015618686d8e46582449b952362",
       "context": context,
       "card": card,
       "buildargs": {
