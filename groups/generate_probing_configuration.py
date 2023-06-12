@@ -40,19 +40,19 @@ gpu_cards = [
     ("mms-large-1", 1),
     # ("mms-large-2", 1),
     # ("dsail2", 1),
-    ("mms-large-1", 2),
+    # ("mms-large-1", 2),
     # ("mms-large-2", 2),
     # ("dsail2", 2),
-    ("mms-large-1", 3),
+    # ("mms-large-1", 3),
     # ("mms-large-2", 3),
     # ("dsail2", 3),
-    # ("mms-large-1", 4),
+    ("mms-large-1", 4),
     # ("mms-large-2", 4),
     # ("mms-large-1", 5),
     # ("mms-large-2", 5),
     # ("mms-large-1", 6),
     # ("mms-large-2", 6),
-    ("mms-large-1", 7),
+    # ("mms-large-1", 7),
     # ("mms-large-2", 7),
 ]
 
@@ -70,7 +70,7 @@ def config_filter(config):
     name = f"{model.replace('/', '-')}_{dataset}_{training_type}"
     acc = results.loc[results["name"] == name]["accuracy"].iloc[0]
     already_taken = pd.notnull(results.loc[results["name"] == name]["contribs_run_id"].iloc[0])
-    return (acc >= 0.75) and not already_taken
+    return (acc >= 0.70) and not already_taken
 
 good_configs = list(filter(config_filter, configs))[:4]
 

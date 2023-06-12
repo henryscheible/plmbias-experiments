@@ -20,7 +20,7 @@ class bcolors:
 
 api = wandb.Api()
 
-results = pd.DataFrame(columns=["name", "accuracy", "versions", "acc>0.7", "acc>0.75", "has_contribs", "contribs_artifact", "contribs_run_id"])
+results = pd.DataFrame(columns=["name", "accuracy", "versions", "acc>0.7", "acc>0.75", "has_contribs", "contribs_artifact", "contribs_run_id", "has_encoder_ablation", "has_decoder_ablation", "encoder_ablation_artifact", "decoder_ablation_artifact", "has_encoder_ablation_vis", "has_decoder_ablation_vis", "encoder_ablation_vis_artifact", "decoder_ablation_vis_artifact"])
 
 with open("specfile.json", "r") as specfile:
     raw_specs = json.loads(specfile.read())
@@ -57,8 +57,49 @@ for spec in tqdm(specs):
     if len(contrib_artifacts) > 0:
         has_contribs = True
         contribs_artifact = contrib_artifacts[0].name
+        contribs_artifact_obj = contrib_artifacts[0]
     for version in model_versions:
         version.save()
+    
+    has_encoder_ablation = False
+    has_decoder_ablation = False
+    encoder_ablation_artifact = None
+    decoder_ablation_artifact = None
+
+    if has_contribs:
+        ablation_candidates = [artifact for run in contribs_artifact_obj.used_by() for artifact in run.logged_artifacts()]
+        encoder_ablation_candidates =  list(filter(lambda artifact: "latest" in artifact.aliases and "encoder" in artifact.name, ablation_candidates))
+        decoder_ablation_candidates =  list(filter(lambda artifact: "latest" in artifact.aliases and "decoder" in artifact.name, ablation_candidates))
+        assert len(encoder_ablation_candidates) <= 1
+        assert len(decoder_ablation_candidates) <= 1
+        if len(encoder_ablation_candidates) > 0:
+            has_encoder_ablation = True
+            encoder_ablation_artifact = encoder_ablation_candidates[0].name
+            encoder_ablation_artifact_obj = encoder_ablation_candidates[0]
+        if len(decoder_ablation_candidates) > 0:
+            has_decoder_ablation = True
+            decoder_ablation_artifact = decoder_ablation_candidates[0].name
+            decoder_ablation_artifact_obj = decoder_ablation_candidates[0]
+
+    has_encoder_ablation_vis = False
+    encoder_ablation_vis_artifact = None
+
+    has_decoder_ablation_vis = False
+    decoder_ablation_vis_artifact = None
+
+    if has_encoder_ablation:
+        vis_candidates = [artifact for run in encoder_ablation_artifact_obj.used_by() for artifact in run.logged_artifacts()]
+        vis_candidates =  list(filter(lambda artifact: "latest" in artifact.aliases, vis_candidates))
+        if len(vis_candidates) > 0:
+            has_encoder_ablation_vis = True
+            encoder_ablation_vis_artifact = vis_candidates[0].name
+
+    if has_decoder_ablation:
+        vis_candidates = [artifact for run in decoder_ablation_artifact_obj.used_by() for artifact in run.logged_artifacts()]
+        vis_candidates =  list(filter(lambda artifact: "latest" in artifact.aliases, vis_candidates))
+        if len(vis_candidates) > 0:
+            has_decoder_ablation_vis = True
+            decoder_ablation_vis_artifact = vis_candidates[0].name
 
     
     results.loc[len(results)] = {
@@ -69,7 +110,15 @@ for spec in tqdm(specs):
         "versions": len(model_versions),
         "has_contribs": has_contribs,
         "contribs_artifact": contribs_artifact,
-        "contribs_run_id": contrib_run_id
+        "contribs_run_id": contrib_run_id,
+        "has_encoder_ablation": has_encoder_ablation,
+        "has_decoder_ablation": has_decoder_ablation,
+        "encoder_ablation_artifact": encoder_ablation_artifact,
+        "decoder_ablation_artifact": decoder_ablation_artifact,
+        "has_encoder_ablation_vis": has_encoder_ablation_vis,
+        "has_decoder_ablation_vis": has_decoder_ablation_vis,
+        "encoder_ablation_vis_artifact": encoder_ablation_vis_artifact,
+        "decoder_ablation_vis_artifact": decoder_ablation_vis_artifact
     }
 
 results["versions"] = results["versions"].astype("Int64")
@@ -78,8 +127,12 @@ results["acc>0.75"] = results["acc>0.75"].astype("Int64").fillna(0)
 
 results.to_csv("results.csv")
 print(results)
-print(f"ACC > .7: {results['acc>0.7'].sum()} models")
-print(f"ACC > .75: {results['acc>0.75'].sum()} models")
+print(f"ACC > .7: {results['acc>0.7'].sum()}/{len(results)}")
+print(f"ACC > .75: {results['acc>0.75'].sum()}/{len(results)}")
+print(f"Probing Started: {results['contribs_run_id'].notnull().sum()}/{len(results)}")
+print(f"Probing Finished: {results['has_contribs'].sum()}/{len(results)}")
+print(f"Encoder Ablation Finished: {int(results['has_encoder_ablation'].sum())}/{len(results)}")
+print(f"Decoder Ablation Finished: {int(results['has_decoder_ablation'].sum())}/{len(results)}")
 
 
 # for launch_file in sys.argv[1:]:
